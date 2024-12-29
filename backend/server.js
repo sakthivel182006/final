@@ -1,7 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
-import productRoutes from "./routes/product.route.js"; // Ensure this path is correct
+import productRoutes from "./routes/product.route.js";
+import feedbackRoutes from "./routes/feedback.route.js";
 import cors from "cors";
 import path from "path";
 
@@ -15,13 +16,13 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Connect to Database
+// Connect to the database
 connectDB();
 
-// API Routes
-app.use("/api/products", productRoutes);
+app.use("/api/users", productRoutes);
+app.use("/api/feedback", feedbackRoutes);  
 
-// Serve Frontend in Production
+// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
@@ -30,7 +31,7 @@ if (process.env.NODE_ENV === "production") {
     });
 }
 
-// Start Server
+// Start the server
 app.listen(PORT, () => {
     console.log(`Server started at http://localhost:${PORT}`);
 });

@@ -1,107 +1,158 @@
-
 import React, { useState } from "react";
-import { useProductStore } from '../store/product'; // Adjust the import path as needed
+import { useUserStore } from "../store/product"; // Ensure the correct import path and store name
+import "./Createpage.css";
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
+import Dashboard from "./Dashboard";
 
 const Createpage = () => {
   const [formData, setFormData] = useState({
     name: "",
-    price: "",
-    image: "",
+    email: "",
+    password: "",
   });
 
-  const { createProduct } = useProductStore(); // Destructuring createProduct from the store
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleChange = (e) => {
+  const [isRegisterForm, setIsRegisterForm] = useState(true); // State to toggle between Register and Login form
+
+  const { createUser, loginUser } = useUserStore(); // Assuming you have a loginUser function in your store
+  const navigate = useNavigate(); // Initialize the navigate function
+
+  const handleCreateChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData({ ...loginData, [name]: value });
+  };
+
+  const handleCreateSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate fields
-    if (!formData.name || !formData.price || !formData.image) {
+    if (!formData.name || !formData.email || !formData.password) {
       alert("Please fill in all fields.");
       return;
     }
 
-    // Call the createProduct function from the Zustand store
-    const result = await createProduct(formData);
+    const result = await createUser(formData);
 
     if (result.success) {
-      alert(result.message); // Show success message
-      setFormData({ name: "", price: "", image: "" }); // Reset form after successful creation
+      alert(result.message);
+      setFormData({ name: "", email: "", password: "" });
     } else {
-      alert(result.message); // Show error message
+      alert(result.message);
     }
   };
 
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!loginData.email || !loginData.password) {
+      alert("Please fill in both fields.");
+      return;
+    }
+
+    const result = await loginUser(loginData);
+
+    if (result.success) {
+      alert(result.message);
+      navigate("/dashboard"); // Use navigate correctly to redirect to Dashboard
+    } else {
+      alert(result.message);
+    }
+  };
+
+  const toggleForm = () => {
+    setIsRegisterForm(!isRegisterForm); // Toggle between Register and Login form
+  };
+
   return (
-    <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px" }}>
-      <h1>Create Product</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "10px" }}>
-          <label htmlFor="name" style={{ display: "block", marginBottom: "5px" }}>Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            style={{
-              width: "100%",
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-            }}
-          />
+    <div className="page">
+      <div className="form-container">
+        <h1>{isRegisterForm ? "Create User" : "Login"}</h1>
+        
+        {/* Toggle Buttons */}
+        <div className="form-toggle">
+          <button onClick={toggleForm}>
+            {isRegisterForm ? "Switch to Login" : "Switch to Register"}
+          </button>
         </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label htmlFor="price" style={{ display: "block", marginBottom: "5px" }}>Price:</label>
-          <input
-            type="number"
-            id="price"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            style={{
-              width: "100%",
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-            }}
-          />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label htmlFor="image" style={{ display: "block", marginBottom: "5px" }}>Image URL:</label>
-          <input
-            type="text"
-            id="image"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            style={{
-              width: "100%",
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-            }}
-          />
-        </div>
-        <button
-          type="submit"
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#007BFF",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Create Product
-        </button>
-      </form>
+
+        {/* Register Form */}
+        {isRegisterForm ? (
+          <form onSubmit={handleCreateSubmit}>
+            <div className="input-group">
+              <label htmlFor="name">Name:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleCreateChange}
+              />
+            </div>
+            <div className="input-group">
+              <label htmlFor="email">Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleCreateChange}
+              />
+            </div>
+            <div className="input-group">
+              <label htmlFor="password">Password:</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleCreateChange}
+              />
+            </div>
+            <button type="submit">Create User</button>
+          </form>
+        ) : (
+          // Login Form
+          <form onSubmit={handleLoginSubmit}>
+            <div className="input-group">
+              <label htmlFor="loginEmail">Email:</label>
+              <input
+                type="email"
+                id="loginEmail"
+                name="email"
+                value={loginData.email}
+                onChange={handleLoginChange}
+              />
+            </div>
+            <div className="input-group">
+              <label htmlFor="loginPassword">Password:</label>
+              <input
+                type="password"
+                id="loginPassword"
+                name="password"
+                value={loginData.password}
+                onChange={handleLoginChange}
+              />
+            </div>
+            <button type="submit">Login</button>
+          </form>
+        )}
+      </div>
+
+      <div className="content">
+        <h2>Welcome to Create Page</h2>
+        <p>
+          This page allows you to create a new user or log in. Please choose
+          the appropriate form above.
+        </p>
+      </div>
     </div>
   );
 };

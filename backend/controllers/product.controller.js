@@ -1,6 +1,6 @@
 import Product from "../models/product.model.js";
-import mongoose from "mongoose";
 
+// Get all products
 export const getProducts = async (req, res) => {
     try {
         const products = await Product.find();
@@ -10,15 +10,36 @@ export const getProducts = async (req, res) => {
         res.status(200).json({ success: true, data: products });
     } catch (error) {
         console.error("Error fetching products:", error);
-        res.status(500).json({ success: false, message: "Failed to fetch products" });
+        res.status(500).json({ success: false, message: "Failed to fetch products", error });
     }
 };
-
-export const createproduct = async (req, res) => {
-    const product = req.body;
-    const newProduct = new Product(product);
+// Create a new product
+export const createProduct = async (req, res) => {
+    const { email, password, ...productData } = req.body; // Assuming 'email' and 'password' are part of the product data
     try {
+        // Check if the product with the same email already exists
+        const existingProduct = await Product.findOne({ email });
+
+        if (existingProduct) {
+            // Check if the password matches the existing product's password
+            if (existingProduct.password === password) {
+                return res.status(400).json({
+                    success: true,  // Both email and password match, so return success
+                    message: "login success"
+                });
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: "Email exists but the password is incorrect"
+                });
+            }
+        }
+
+        // If no existing product with the same email, create and save the new product
+        const newProduct = new Product({ email, password, ...productData }); // Save with the provided password
+
         const savedProduct = await newProduct.save();
+
         res.status(201).json({ success: true, data: savedProduct });
     } catch (error) {
         console.error("Error saving product:", error);
@@ -26,7 +47,10 @@ export const createproduct = async (req, res) => {
     }
 };
 
-export const putproduct = async (req, res) => {
+
+
+
+export const updateProduct = async (req, res) => {
     const { id } = req.params;
     const product = req.body;
     try {
@@ -41,7 +65,8 @@ export const putproduct = async (req, res) => {
     }
 };
 
-export const deleteproduct = async (req, res) => {
+// Delete a product
+export const deleteProduct = async (req, res) => {
     const { id } = req.params;
     try {
         const deletedProduct = await Product.findByIdAndDelete(id);

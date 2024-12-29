@@ -1,13 +1,12 @@
-import mongoose, { mongo } from "mongoose";
-const productSchema=new mongoose.Schema({
-    name:{type:String,required:true},
-    price:{type:Number,required:true},
-    image:{type:String,required:true},
-},
-{timestamps:true,
-
-}
+import mongoose from "mongoose";
+const userSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        email: { type: String, required: true,unique: true },
+        password: { type: String, required: true },
+    },
+    { timestamps: true }
 );
 
-const Product=mongoose.model('Product',productSchema);
-export default Product;
+const User = mongoose.model('User', userSchema); // Change 'users' to 'User'
+export default User;

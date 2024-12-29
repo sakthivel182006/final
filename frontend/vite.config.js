@@ -1,16 +1,21 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// Vite configuration
 export default defineConfig({
-    plugins: [react()],
-    server: {
-        proxy: {
-            "/api": {
-                target: "http://localhost:5000", // Backend server port
-                changeOrigin: true,
-                secure: false,
-            },
-        },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      react: 'preact/compat',
+      'react-dom': 'preact/compat',
     },
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5001',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });
