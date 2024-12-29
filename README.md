@@ -1,2 +1,0 @@
-"# mern-crash-course" 
-"# afterdelete" 
