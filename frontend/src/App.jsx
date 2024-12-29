@@ -5,7 +5,7 @@ import Createpage from './pages/Createpage';
 import Navbar from './components/Navbar';
 import About from './pages/About';
 import Contact from './pages/Contact';
-const App = () => {
+const app = () => {
   return (
     <BrowserRouter>
       <Navbar />
@@ -20,4 +20,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default app;
