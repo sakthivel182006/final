@@ -34,5 +34,3 @@ export const useProductStore = create((set) => ({
         }
     },
 }));
-
-export default Product;
